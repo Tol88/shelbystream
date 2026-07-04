@@ -2,34 +2,15 @@ import { useState } from "react";
 import { useUploadBlobs } from "@shelby-protocol/react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
-const REGISTRY_OWNER = "0xfe34b155ee9b7bc7ffc78468fb72e91f44d0c1b4f352239e5593374803c9f609";
-const API_KEY = import.meta.env.VITE_SHELBY_API_KEY;
-
-async function registerUploader(addr, signAndSubmitTransaction, account, uploadBlobs) {
+async function registerUploader(addr) {
   try {
-    const url = `https://shelby.shelbynet.shelby.xyz/shelby/v1/blobs/${REGISTRY_OWNER}/uploaders.json?apiKey=${API_KEY}`;
-    const res = await fetch(url);
-    let uploaders = [];
-    if (res.ok) {
-      const text = await res.text();
-      uploaders = JSON.parse(text);
-    }
-    if (!uploaders.includes(addr)) {
-      uploaders.push(addr);
-      const data = new TextEncoder().encode(JSON.stringify(uploaders));
-      await new Promise((resolve, reject) => {
-        uploadBlobs.mutate({
-          signer: {
-            account,
-            signAndSubmitTransaction: async (tx) => await signAndSubmitTransaction(tx),
-          },
-          blobs: [{ blobName: "uploaders.json", blobData: data }],
-          expirationMicros: Date.now() * 1000 + 86400000000 * 365,
-        }, { onSuccess: resolve, onError: reject });
-      });
-    }
+    await fetch("/api/uploaders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address: addr }),
+    });
   } catch (err) {
-    console.error("Register uploader failed:", err);
+    console.error("Register failed:", err);
   }
 }
 
@@ -67,7 +48,7 @@ export default function Upload() {
     const metadata = { title, description, price, fileName: file.name, uploadedAt: new Date().toISOString() };
     const metaData = new TextEncoder().encode(JSON.stringify(metadata));
 
-    await registerUploader(addr, signAndSubmitTransaction, account, uploadBlobs);
+    await registerUploader(addr);
 
     uploadBlobs.mutate({
       signer: {

@@ -4,15 +4,13 @@ import { useShelbyVideos } from "../hooks/useShelbyVideos";
 import { useState, useEffect } from "react";
 
 const REGISTRY_OWNER = "0xfe34b155ee9b7bc7ffc78468fb72e91f44d0c1b4f352239e5593374803c9f609";
-const API_KEY = import.meta.env.VITE_SHELBY_API_KEY;
+
 
 async function fetchUploaders() {
   try {
-    const url = `https://shelby.shelbynet.shelby.xyz/shelby/v1/blobs/${REGISTRY_OWNER}/uploaders.json?apiKey=${API_KEY}`;
-    const res = await fetch(url);
+    const res = await fetch("/api/uploaders");
     if (!res.ok) return [REGISTRY_OWNER];
-    const text = await res.text();
-    const list = JSON.parse(text);
+    const list = await res.json();
     return [...new Set([REGISTRY_OWNER, ...list])];
   } catch {
     return [REGISTRY_OWNER];
