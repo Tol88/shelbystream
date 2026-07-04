@@ -1,0 +1,19 @@
+:root {
+  --bg: #fcfcfc;
+  --green: #3f1b36;
+  --text: #ff44c4;
+  --text-dim: #fb00d9;
+  --border: #f9009e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #fffeff;
+  color: var(--text);
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; }
