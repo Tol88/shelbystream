@@ -2,9 +2,7 @@ import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Link } from "react-router-dom";
 import { useShelbyVideos } from "../hooks/useShelbyVideos";
 import { useState, useRef } from "react";
-import { useUploadBlobs } from "@shelby-protocol/react";
-
-const REGISTRY_OWNER = "0xfe34b155ee9b7bc7ffc78468fb72e91f44d0c1b4f352239e5593374803c9f609";
+import { useUploadBlobs, useDeleteBlobs } from "@shelby-protocol/react";
 
 const getAddress = (address) => {
   if (!address) return "";
@@ -30,6 +28,11 @@ function VideoCardProfile({ v, username, addr, account, signAndSubmitTransaction
     onError: () => setSaving(false),
   });
 
+  const deleteBlobs = useDeleteBlobs({
+    onSuccess: () => window.location.reload(),
+    onError: (err) => console.error("Delete failed:", err),
+  });
+
   const handleSave = async () => {
     setSaving(true);
     const metadata = { title, description, price, fileName: blobNameSuffix, updatedAt: new Date().toISOString() };
@@ -41,6 +44,17 @@ function VideoCardProfile({ v, username, addr, account, signAndSubmitTransaction
       },
       blobs: [{ blobName: metaSuffix, blobData: metaData }],
       expirationMicros: Date.now() * 1000 + 86400000000 * 30,
+    });
+  };
+
+  const handleDelete = () => {
+    if (!confirm("Are you sure you want to delete this video?")) return;
+    deleteBlobs.mutate({
+      signer: {
+        account,
+        signAndSubmitTransaction: async (tx) => await signAndSubmitTransaction(tx),
+      },
+      blobNames: [blobNameSuffix, metaSuffix],
     });
   };
 
@@ -111,11 +125,19 @@ function VideoCardProfile({ v, username, addr, account, signAndSubmitTransaction
               <p className="video-author">@{username || addr.slice(0, 8)}</p>
               <p className="video-views">{v.views}</p>
             </div>
-            <button
-              className="avatar-edit-btn"
-              style={{ position: "static", marginLeft: "auto", flexShrink: 0 }}
-              onClick={() => setEditing(true)}
-            >✎</button>
+            <div style={{ display: "flex", gap: 6, marginLeft: "auto" }}>
+              <button
+                className="avatar-edit-btn"
+                style={{ position: "static" }}
+                onClick={() => setEditing(true)}
+              >✎</button>
+              <button
+                className="avatar-edit-btn"
+                style={{ position: "static", background: "#e74c3c" }}
+                onClick={handleDelete}
+                disabled={deleteBlobs.isPending}
+              >🗑</button>
+            </div>
           </div>
         )}
       </div>
@@ -132,22 +154,13 @@ export default function Profile() {
   const [tempName, setTempName] = useState(username);
   const [avatar, setAvatar] = useState(() => localStorage.getItem(`avatar-${addr}`) || null);
   const [copied, setCopied] = useState(false);
-  const [registering, setRegistering] = useState(false);
-  const [registered, setRegistered] = useState(false);
   const fileRef = useRef();
 
   const { videos: myVideos, isLoading } = useShelbyVideos(addr);
 
   const uploadBlobs = useUploadBlobs({
-    onSuccess: () => {
-      console.log("Saved to Shelbynet");
-      setRegistering(false);
-      setRegistered(true);
-    },
-    onError: (err) => {
-      console.error("Save failed:", err);
-      setRegistering(false);
-    },
+    onSuccess: () => console.log("Profile saved to Shelbynet"),
+    onError: (err) => console.error("Profile save failed:", err),
   });
 
   const saveName = () => {
@@ -158,16 +171,6 @@ export default function Profile() {
     uploadBlobs.mutate({
       signer: { account, signAndSubmitTransaction: async (tx) => await signAndSubmitTransaction(tx) },
       blobs: [{ blobName: "profile.json", blobData: data }],
-      expirationMicros: Date.now() * 1000 + 86400000000 * 365,
-    });
-  };
-
-  const handleRegister = () => {
-    setRegistering(true);
-    const data = new TextEncoder().encode(JSON.stringify([addr]));
-    uploadBlobs.mutate({
-      signer: { account, signAndSubmitTransaction: async (tx) => await signAndSubmitTransaction(tx) },
-      blobs: [{ blobName: "uploaders.json", blobData: data }],
       expirationMicros: Date.now() * 1000 + 86400000000 * 365,
     });
   };
@@ -205,7 +208,6 @@ export default function Profile() {
 
   const shortAddress = addr ? addr.slice(0, 6) + "..." + addr.slice(-4) : "";
   const displayName = username || shortAddress;
-  const isOwner = addr === REGISTRY_OWNER;
 
   return (
     <main className="container">
@@ -264,21 +266,9 @@ export default function Profile() {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
-            <button className="btn btn-outline disconnect-btn" onClick={disconnect}>
-              Disconnect wallet
-            </button>
-            {!registered && (
-              <button
-                className="btn btn-primary"
-                onClick={handleRegister}
-                disabled={registering}
-              >
-                {registering ? "Registering..." : "🔧 Init uploaders registry"}
-              </button>
-            )}
-            {registered && <span style={{ color: "green", fontSize: 13, alignSelf: "center" }}>✓ Registry created!</span>}
-          </div>
+          <button className="btn btn-outline disconnect-btn" onClick={disconnect}>
+            Disconnect wallet
+          </button>
         </div>
       </div>
 
