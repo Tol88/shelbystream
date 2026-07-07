@@ -42,13 +42,25 @@ export default function VideoCard({ video }) {
             <source src={video.videoUrl} type="video/mp4" />
           </video>
         </div>
-        <div className="video-card-body">
+        <div className="video-card-body" style={{ background: "#fff", borderRadius: "0 0 12px 12px", padding: "10px" }}>
           <AvatarEl />
-          <div>
-            <p className="video-title">{video.title}</p>
-            <p className="video-author">{video.author}</p>
-            <p className="video-views">{video.views}</p>
+          <div style={{ flex: 1 }}>
+            <p className="video-title" style={{ color: "#1c1c1c" }}>{video.title}</p>
+            <p className="video-author" style={{ color: "#6b6b67" }}>{video.author}</p>
+            <p className="video-views" style={{ color: "#6b6b67" }}>{video.views}</p>
           </div>
+          <Link
+            to={`/watch/${video.id}`}
+            onClick={handleClick}
+            style={{
+              display: "flex", alignItems: "center", gap: 4,
+              background: "#1c1c1c", color: "#fff",
+              borderRadius: 8, padding: "6px 12px",
+              fontSize: 13, fontWeight: 500, marginLeft: "auto", flexShrink: 0
+            }}
+          >
+            ▶ Watch
+          </Link>
         </div>
       </div>
     );
@@ -56,7 +68,10 @@ export default function VideoCard({ video }) {
 
   return (
     <div className="video-card">
-      <div className="thumb thumb-clickable" style={{ background: video.color }}>
+      <div
+        className="thumb thumb-clickable"
+        style={{ background: video.color }}
+      >
         <span className={`price-tag ${video.free ? "price-free" : ""}`}>
           {video.price}
         </span>
@@ -65,14 +80,26 @@ export default function VideoCard({ video }) {
         )}
         <span className="duration-tag">{video.duration}</span>
       </div>
-      <Link to={`/watch/${video.id}`} onClick={handleClick} className="video-card-body">
+      <div className="video-card-body" style={{ background: "#fff", borderRadius: "0 0 12px 12px", padding: "10px" }}>
         <AvatarEl />
-        <div>
-          <p className="video-title">{video.title}</p>
-          <p className="video-author">{video.author}</p>
-          <p className="video-views">{video.views}</p>
+        <div style={{ flex: 1 }}>
+          <p className="video-title" style={{ color: "#1c1c1c" }}>{video.title}</p>
+          <p className="video-author" style={{ color: "#6b6b67" }}>{video.author}</p>
+          <p className="video-views" style={{ color: "#6b6b67" }}>{video.views}</p>
         </div>
-      </Link>
+        <Link
+          to={`/watch/${video.id}`}
+          onClick={handleClick}
+          style={{
+            display: "flex", alignItems: "center", gap: 4,
+            background: "#1c1c1c", color: "#fff",
+            borderRadius: 8, padding: "6px 12px",
+            fontSize: 13, fontWeight: 500, marginLeft: "auto", flexShrink: 0
+          }}
+        >
+          ▶ Watch
+        </Link>
+      </div>
     </div>
   );
 }
