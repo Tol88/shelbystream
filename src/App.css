@@ -20,7 +20,7 @@
 .btn-primary { background: var(--text); color: #111; font-weight: 600; }
 
 .tabs-row {
-  display: none; gap: 8px; padding: 0 32px;
+  display: flex; gap: 8px; padding: 0 32px;
   border-top: 1px solid var(--border);
 }
 .tab {
