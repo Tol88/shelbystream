@@ -133,7 +133,7 @@ function VideoCardProfile({ v, username, addr, account, signAndSubmitTransaction
               >✎</button>
               <button
                 className="avatar-edit-btn"
-                style={{ position: "static", background: "#e74c3c" }}
+                style={{ position: "static", background: "#060606" }}
                 onClick={handleDelete}
                 disabled={deleteBlobs.isPending}
               >🗑</button>
