@@ -90,8 +90,8 @@ export default function Navbar() {
         </div>
         <div className="tabs-row">
           <Link to="/" className={`tab ${pathname === "/" ? "active" : ""}`}>Home</Link>
-          <Link to="/watch/1" className={`tab ${pathname.startsWith("/watch") ? "active" : ""}`}>Watch</Link>
           <Link to="/upload" className={`tab ${pathname === "/upload" ? "active" : ""}`}>Upload video</Link>
+
         </div>
       </header>
       {showModal && <WalletModal onClose={() => setShowModal(false)} />}
