@@ -1,8 +1,9 @@
 import { useParams, Link } from "react-router-dom";
 import { usePurchase } from "../context/PurchaseContext";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { useState } from "react";
-import { useShelbyVideos } from "../hooks/useShelbyVideos";
+import { useState, useEffect } from "react";
+
+const API_KEY = import.meta.env.VITE_SHELBY_API_KEY;
 
 const comments = [
   { author: "@dianaputri", text: "Super clear explanation, understood it right away!", time: "2 hours ago" },
@@ -13,7 +14,25 @@ const comments = [
 function WatchShelby({ id }) {
   const { connected } = useWallet();
   const savedUrl = sessionStorage.getItem(`videoUrl-${id}`);
-  const videoUrl = savedUrl || `https://shelby.shelbynet.shelby.xyz/shelby/v1/blobs/${decodeURIComponent(id)}?apiKey=${import.meta.env.VITE_SHELBY_API_KEY}`;
+  const videoUrl = savedUrl || `https://shelby.shelbynet.shelby.xyz/shelby/v1/blobs/${decodeURIComponent(id)}?apiKey=${API_KEY}`;
+
+  const [description, setDescription] = useState(sessionStorage.getItem(`desc-${id}`) || "");
+  const [title, setTitle] = useState("");
+
+  useEffect(() => {
+    const decodedId = decodeURIComponent(id);
+    const parts = decodedId.split("/");
+    const addr = parts[0];
+    const blobSuffix = parts[1];
+    const metaUrl = `https://shelby.shelbynet.shelby.xyz/shelby/v1/blobs/${addr}/${blobSuffix}.meta.json?apiKey=${API_KEY}`;
+    fetch(metaUrl)
+      .then(r => r.json())
+      .then(meta => {
+        if (meta.description) setDescription(meta.description);
+        if (meta.title) setTitle(meta.title);
+      })
+      .catch(() => {});
+  }, [id]);
 
   return (
     <main className="container">
@@ -43,14 +62,20 @@ function WatchShelby({ id }) {
             )}
           </section>
         </div>
+
         <aside className="watch-side">
           <h3>About this video</h3>
+          {title && (
+            <p style={{ fontSize: 15, fontWeight: 600, color: "#1c1c1c", marginBottom: 8 }}>
+              {title}
+            </p>
+          )}
           <p style={{ fontSize: 14, color: "#4a4a47", lineHeight: 1.6 }}>
-            {sessionStorage.getItem(`desc-${id}`) || "No description available."}
+            {description || "No description available."}
           </p>
-          <Link to="/" className="see-all" style={{ marginTop: 16, display: "block" }}>← Browse all videos</Link>
-
-
+          <Link to="/" className="see-all" style={{ marginTop: 16, display: "block" }}>
+            ← Browse all videos
+          </Link>
         </aside>
       </div>
     </main>
