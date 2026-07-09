@@ -6,9 +6,9 @@ import { useState, useEffect } from "react";
 const API_KEY = import.meta.env.VITE_SHELBY_API_KEY;
 
 const comments = [
-  { author: "@dianaputri", text: "Super clear explanation, understood it right away!", time: "2 hours ago" },
-  { author: "@fajarcode", text: "Can you share the dataset link you used?", time: "5 hours ago" },
-  { author: "@yudi_w", text: "Finally a complete and detailed tutorial.", time: "1 day ago" },
+  { author: "@Akasha|Shelby", text: "Super clear explanation, understood it right away!", time: "2 hours ago" },
+  { author: "@Castro", text: "Can you share the dataset link you used?", time: "5 hours ago" },
+  { author: "@Mbappe Oppa", text: "Finally a complete and detailed tutorial.", time: "1 day ago" },
 ];
 
 function WatchShelby({ id }) {
