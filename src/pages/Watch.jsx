@@ -70,9 +70,15 @@ function WatchShelby({ id }) {
               {title}
             </p>
           )}
-          <p style={{ fontSize: 14, color: "#4a4a47", lineHeight: 1.6 }}>
-            {description || "No description available."}
-          </p>
+          <div style={{ fontSize: 14, color: "#4a4a47", lineHeight: 1.8, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            {description ? description.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+              /^https?:\/\//.test(part) ? (
+                <a key={i} href={part} target="_blank" rel="noreferrer" style={{ color: "var(--green)", textDecoration: "underline" }}>
+                {part}
+                </a>
+              ) : part
+            ) : "No description available."}
+          </div>
           <Link to="/" className="see-all" style={{ marginTop: 16, display: "block" }}>
             ← Browse all videos
           </Link>
