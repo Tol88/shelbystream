@@ -1,8 +1,45 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const avatarColor = (author) =>
   `hsl(${parseInt(author?.slice(1, 4) || "0", 36) % 360}, 60%, 45%)`;
+
+function VideoThumb({ videoUrl, color }) {
+  const [thumb, setThumb] = useState(null);
+
+  useEffect(() => {
+    if (!videoUrl) return;
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.src = videoUrl;
+    video.muted = true;
+    video.currentTime = 1;
+    video.onloadeddata = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth || 320;
+        canvas.height = video.videoHeight || 180;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        setThumb(canvas.toDataURL("image/jpeg"));
+      } catch {}
+    };
+  }, [videoUrl]);
+
+  if (thumb) {
+    return (
+      <img
+        src={thumb}
+        alt="thumbnail"
+        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px" }}
+      />
+    );
+  }
+
+  return (
+    <div style={{ width: "100%", height: "100%", background: color || "#dde8e3", borderRadius: "12px" }} />
+  );
+}
 
 export default function VideoCard({ video }) {
   const [playing, setPlaying] = useState(false);
@@ -11,23 +48,14 @@ export default function VideoCard({ video }) {
     if (video.videoUrl) {
       sessionStorage.setItem(`videoUrl-${video.id}`, video.videoUrl);
       sessionStorage.setItem(`desc-${video.id}`, video.description || "");
-     
     }
   };
 
   const AvatarEl = () =>
     video.avatar ? (
-      <img
-        src={video.avatar}
-        alt="avatar"
-        className="avatar avatar-sm"
-        style={{ objectFit: "cover", borderRadius: "50%" }}
-      />
+      <img src={video.avatar} alt="avatar" className="avatar avatar-sm" style={{ objectFit: "cover", borderRadius: "50%" }} />
     ) : (
-      <span
-        className="avatar avatar-sm"
-        style={{ background: avatarColor(video.author) }}
-      >
+      <span className="avatar avatar-sm" style={{ background: avatarColor(video.author) }}>
         {video.initials}
       </span>
     );
@@ -70,17 +98,24 @@ export default function VideoCard({ video }) {
 
   return (
     <div className="video-card">
-      <div
-        className="thumb thumb-clickable"
-        style={{ background: video.color }}
-      >
-        <span className={`price-tag ${video.free ? "price-free" : ""}`}>
+      <div className="thumb thumb-clickable" style={{ position: "relative", overflow: "hidden" }}>
+        <VideoThumb videoUrl={video.videoUrl} color={video.color} />
+        <span
+          className={`price-tag ${video.free ? "price-free" : ""}`}
+          style={{ position: "absolute", top: 12, right: 12 }}
+        >
           {video.price}
         </span>
         {video.videoUrl && (
-          <button className="thumb-play-btn" onClick={() => setPlaying(true)}>▶</button>
+          <button
+            className="thumb-play-btn"
+            onClick={() => setPlaying(true)}
+            style={{ position: "absolute" }}
+          >▶</button>
         )}
-        <span className="duration-tag">{video.duration}</span>
+        <span className="duration-tag" style={{ position: "absolute", bottom: 10, right: 10 }}>
+          {video.duration}
+        </span>
       </div>
       <div className="video-card-body" style={{ background: "#fff", borderRadius: "0 0 12px 12px", padding: "10px" }}>
         <AvatarEl />
