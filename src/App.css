@@ -472,3 +472,26 @@
 .home-empty h2 { color: #1c1c1c; margin: 0 0 8px; }
 .avatar { background: var(--green); }
 .avatar-sm { background: var(--green); }
+
+
+/* Toast notification */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: #1c1c1c; color: #fff;
+  border-radius: 12px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  z-index: 9999; min-width: 300px; max-width: 400px;
+  animation: slideIn 0.3s ease;
+}
+.toast span { color: var(--green); font-size: 18px; }
+.toast p { margin: 0; flex: 1; font-size: 14px; }
+.toast button {
+  background: none; border: none; color: #888;
+  cursor: pointer; font-size: 16px; padding: 0;
+}
+.toast button:hover { color: #fff; }
+@keyframes slideIn {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

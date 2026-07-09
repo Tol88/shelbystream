@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useUploadBlobs } from "@shelby-protocol/react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { useNavigate } from "react-router-dom";
+import Toast from "../components/Toast";
 
 async function registerUploader(addr) {
   try {
@@ -16,15 +18,24 @@ async function registerUploader(addr) {
 
 export default function Upload() {
   const { connected, account, signAndSubmitTransaction } = useWallet();
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("0");
   const [file, setFile] = useState(null);
-  const [done, setDone] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const uploadBlobs = useUploadBlobs({
-    onSuccess: () => setDone(true),
+    onSuccess: () => {
+      setShowToast(true);
+      setTitle("");
+      setDescription("");
+      setFile(null);
+      setPrice("0");
+      setErrorMsg("");
+      setTimeout(() => navigate("/"), 4000);
+    },
     onError: (err) => {
       console.error("Upload failed:", err);
       setErrorMsg(err?.message || "Upload failed. Please try again.");
@@ -78,47 +89,41 @@ export default function Upload() {
 
   return (
     <main className="container">
+      {showToast && (
+        <Toast
+          message="Video uploaded successfully! Redirecting to home..."
+          onClose={() => setShowToast(false)}
+        />
+      )}
       <div className="upload-box">
         <h1>Upload video</h1>
         <p className="upload-sub">Share your video and earn sUSD from viewers. Stored on Shelby Protocol Shelbynet.</p>
 
-        {done ? (
-          <div className="upload-success">
-            <p>Your video has been uploaded to Shelby Protocol Shelbynet!</p>
-            <button className="btn btn-primary" onClick={() => {
-              setDone(false); setTitle(""); setDescription("");
-              setFile(null); setPrice("0"); setErrorMsg("");
-            }}>
-              Upload another video
-            </button>
-          </div>
-        ) : (
-          <form className="upload-form" onSubmit={handleSubmit}>
-            <label>
-              Video title
-              <input type="text" placeholder="Example: Fine-tune LLM tutorial" value={title} onChange={(e) => setTitle(e.target.value)} required />
-            </label>
-            <label>
-              Description
-              <textarea rows={4} placeholder="Tell us about this video" value={description} onChange={(e) => setDescription(e.target.value)} required />
-            </label>
-            <label>
-              Video file
-              <input type="file" accept="video/*" onChange={(e) => setFile(e.target.files[0])} required />
-            </label>
-            <label>
-              Watch price
-              <div className="price-input">
-                <input type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} />
-                <span>sUSD (set 0 for free)</span>
-              </div>
-            </label>
-            <button type="submit" className="btn btn-primary upload-submit" disabled={uploadBlobs.isPending}>
-              {uploadBlobs.isPending ? "Uploading to Shelby..." : "Upload video"}
-            </button>
-            {errorMsg && <p className="upload-error">{errorMsg}</p>}
-          </form>
-        )}
+        <form className="upload-form" onSubmit={handleSubmit}>
+          <label>
+            Video title
+            <input type="text" placeholder="Example: Fine-tune LLM tutorial" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          </label>
+          <label>
+            Description
+            <textarea rows={4} placeholder="Tell us about this video" value={description} onChange={(e) => setDescription(e.target.value)} required />
+          </label>
+          <label>
+            Video file
+            <input type="file" accept="video/*" onChange={(e) => setFile(e.target.files[0])} required />
+          </label>
+          <label>
+            Watch price
+            <div className="price-input">
+              <input type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} />
+              <span>sUSD (set 0 for free)</span>
+            </div>
+          </label>
+          <button type="submit" className="btn btn-primary upload-submit" disabled={uploadBlobs.isPending}>
+            {uploadBlobs.isPending ? "Uploading to Shelby..." : "Upload video"}
+          </button>
+          {errorMsg && <p className="upload-error">{errorMsg}</p>}
+        </form>
       </div>
     </main>
   );
