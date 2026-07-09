@@ -44,8 +44,13 @@ function WatchShelby({ id }) {
           </section>
         </div>
         <aside className="watch-side">
-          <h3>Other videos</h3>
-          <Link to="/" className="see-all">Browse all videos →</Link>
+          <h3>About this video</h3>
+          <p style={{ fontSize: 14, color: "#4a4a47", lineHeight: 1.6 }}>
+            {sessionStorage.getItem(`desc-${id}`) || "No description available."}
+          </p>
+          <Link to="/" className="see-all" style={{ marginTop: 16, display: "block" }}>← Browse all videos</Link>
+
+
         </aside>
       </div>
     </main>

@@ -62,7 +62,7 @@ export default function EditVideo() {
         signAndSubmitTransaction: async (tx) => await signAndSubmitTransaction(tx),
       },
       blobs: [{ blobName: metaSuffix, blobData: metaData }],
-      expirationMicros: Date.now() * 1000 + 86400000000 * 30,
+      expirationMicros: Date.now() * 1000 + 86400000000 * 365,
     });
   };
 

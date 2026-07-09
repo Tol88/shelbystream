@@ -10,6 +10,8 @@ export default function VideoCard({ video }) {
   const handleClick = () => {
     if (video.videoUrl) {
       sessionStorage.setItem(`videoUrl-${video.id}`, video.videoUrl);
+      sessionStorage.setItem(`desc-${video.id}`, video.description || "");
+     
     }
   };
 

@@ -59,7 +59,7 @@ export default function Upload() {
         { blobName: videoName, blobData: fileData },
         { blobName: metaName, blobData: metaData },
       ],
-      expirationMicros: Date.now() * 1000 + 86400000000 * 30,
+      expirationMicros: Date.now() * 1000 + 86400000000 * 365,
     });
   };
 
