@@ -70,7 +70,7 @@ function WatchShelby({ id }) {
               {title}
             </p>
           )}
-          <div style={{ fontSize: 14, color: "#4a4a47", lineHeight: 1.8, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          <div style={{ fontSize: 14, color: "#000000", lineHeight: 1.8, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
             {description ? description.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
               /^https?:\/\//.test(part) ? (
                 <a key={i} href={part} target="_blank" rel="noreferrer" style={{ color: "var(--green)", textDecoration: "underline" }}>
